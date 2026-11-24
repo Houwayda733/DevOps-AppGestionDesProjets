@@ -13,7 +13,7 @@ pipeline {
             steps {
                 dir('backend') {
                     withSonarQubeEnv('SonarQube') {
-                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests -DskipTests -Dsonar.projectKey=gestion-des-projets-backend'
+                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.9.0.7382:sonar -DskipTests -Dsonar.projectKey=gestion-des-projets-backend -Dsonar.token=${SONAR_TOKEN}'
                     }
                 }
             }
