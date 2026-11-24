@@ -13,7 +13,9 @@ pipeline {
             steps {
                 dir('backend') {
                     withSonarQubeEnv('SonarQube') {
-                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.9.0.7382:sonar -DskipTests -Dsonar.projectKey=gestion-des-projets-backend -Dsonar.token=${SONAR_TOKEN}'
+                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                            sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.9.0.7382:sonar -DskipTests -Dsonar.projectKey=gestion-des-projets-backend -Dsonar.token=$SONAR_TOKEN'
+                        }
                     }
                 }
             }
@@ -33,14 +35,11 @@ pipeline {
                 }
             }
         }
-        stage('SonarQube Analysis') {
+        stage('Conteneur') {
             steps {
-                dir('backend') {
-                    withSonarQubeEnv('SonarQube') {
-                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                            sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.9.0.7382:sonar -DskipTests -Dsonar.projectKey=gestion-des-projets-backend -Dsonar.token=$SONAR_TOKEN'
-                        }
-                    }
-                }
+                sh 'docker compose down || true'
+                sh 'docker compose up -d'
             }
         }
+    }
+}
