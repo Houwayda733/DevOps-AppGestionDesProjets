@@ -1,9 +1,21 @@
 pipeline {
     agent any
+    tools {
+        maven 'Default Maven'
+    }
     stages {
         stage('Build & Test') {
             steps {
                 echo 'Building applications...'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                dir('backend') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gestion-des-projets-backend'
+                    }
+                }
             }
         }
         stage('Création Image Docker') {
