@@ -37,8 +37,11 @@ pipeline {
         }
         stage('Conteneur') {
             steps {
-                sh 'docker compose down || true'
-                sh 'docker compose up -d'
+                sh '''
+                    docker compose down --remove-orphans || true
+                    docker rm -f mysql-db || true
+                    docker compose up -d
+                '''
             }
         }
     }
