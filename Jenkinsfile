@@ -39,7 +39,7 @@ pipeline {
             steps {
                 sh '''
                     docker compose down --remove-orphans || true
-                    docker rm -f mysql-db backend-app || true
+                    docker rm -f mysql-db backend-app frontend-app || true
                     docker compose up -d
                 '''
             }
