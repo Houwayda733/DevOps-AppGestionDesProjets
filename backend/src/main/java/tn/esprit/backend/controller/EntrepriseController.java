@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/entreprise")
 @AllArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:4200}")
 public class EntrepriseController {
 
     private final IEntrepriseService entrepriseService;

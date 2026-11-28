@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/projet-detaille")
 @AllArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin(origins = "${app.cors.allowed-origins:http://localhost:4200}")
 public class ProjetDetailleController {
 
     private final IProjetDetailleService projetDetailleService;
