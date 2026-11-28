@@ -2,6 +2,8 @@ package tn.esprit.backend.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.backend.dto.EquipeDTO;
+import tn.esprit.backend.entity.Entreprise;
 import tn.esprit.backend.entity.Equipe;
 import tn.esprit.backend.service.IEquipeService;
 
@@ -13,16 +15,40 @@ import java.util.List;
 @CrossOrigin("*")
 public class EquipeController {
 
-    IEquipeService equipeService;
+    private final IEquipeService equipeService;
+
+    private EquipeDTO toDTO(Equipe eq) {
+        if (eq == null) return null;
+        return EquipeDTO.builder()
+                .id(eq.getId())
+                .nom(eq.getNom())
+                .specialite(eq.getSpecialite())
+                .entrepriseId(eq.getEntreprise() != null ? eq.getEntreprise().getId() : null)
+                .build();
+    }
+
+    private Equipe toEntity(EquipeDTO dto) {
+        if (dto == null) return null;
+        Equipe eq = new Equipe();
+        eq.setId(dto.getId());
+        eq.setNom(dto.getNom());
+        eq.setSpecialite(dto.getSpecialite());
+        if (dto.getEntrepriseId() != null) {
+            Entreprise ent = new Entreprise();
+            ent.setId(dto.getEntrepriseId());
+            eq.setEntreprise(ent);
+        }
+        return eq;
+    }
 
     @PostMapping("/add")
-    public Equipe addEquipe(@RequestBody Equipe equipe) {
-        return equipeService.addEquipe(equipe);
+    public EquipeDTO addEquipe(@RequestBody EquipeDTO dto) {
+        return toDTO(equipeService.addEquipe(toEntity(dto)));
     }
 
     @PutMapping("/update")
-    public Equipe updateEquipe(@RequestBody Equipe equipe) {
-        return equipeService.updateEquipe(equipe);
+    public EquipeDTO updateEquipe(@RequestBody EquipeDTO dto) {
+        return toDTO(equipeService.updateEquipe(toEntity(dto)));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -31,27 +57,31 @@ public class EquipeController {
     }
 
     @GetMapping("/get/{id}")
-    public Equipe getEquipeById(@PathVariable Long id) {
-        return equipeService.getEquipeById(id);
+    public EquipeDTO getEquipeById(@PathVariable Long id) {
+        return toDTO(equipeService.getEquipeById(id));
     }
 
     @GetMapping("/all")
-    public List<Equipe> getAllEquipes() {
-        return equipeService.getAllEquipes();
+    public List<EquipeDTO> getAllEquipes() {
+        return equipeService.getAllEquipes().stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @GetMapping("/by-entreprise/{entrepriseId}")
-    public List<Equipe> getEquipesByEntreprise(@PathVariable Long entrepriseId) {
-        return equipeService.getEquipesByEntreprise(entrepriseId);
+    public List<EquipeDTO> getEquipesByEntreprise(@PathVariable Long entrepriseId) {
+        return equipeService.getEquipesByEntreprise(entrepriseId).stream()
+                .map(this::toDTO)
+                .toList();
     }
 
     @PutMapping("/assign-entreprise/{equipeId}/{entrepriseId}")
-    public Equipe assignEquipeToEntreprise(@PathVariable Long equipeId, @PathVariable Long entrepriseId) {
-        return equipeService.assignEquipeToEntreprise(equipeId, entrepriseId);
+    public EquipeDTO assignEquipeToEntreprise(@PathVariable Long equipeId, @PathVariable Long entrepriseId) {
+        return toDTO(equipeService.assignEquipeToEntreprise(equipeId, entrepriseId));
     }
 
     @PutMapping("/assign-projet/{equipeId}/{projetId}")
-    public Equipe assignEquipeToProjet(@PathVariable Long equipeId, @PathVariable Long projetId) {
-        return equipeService.assignEquipeToProjet(equipeId, projetId);
+    public EquipeDTO assignEquipeToProjet(@PathVariable Long equipeId, @PathVariable Long projetId) {
+        return toDTO(equipeService.assignEquipeToProjet(equipeId, projetId));
     }
 }
